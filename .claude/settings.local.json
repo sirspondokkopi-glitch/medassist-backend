@@ -3,7 +3,11 @@
     "allow": [
       "Bash(composer show *)",
       "Bash(composer require *)",
-      "Bash(php artisan *)"
+      "Bash(php artisan *)",
+      "Bash(Remove-Item -Recurse -Force \"C:\\\\Users\\\\muchl\\\\Documents\\\\Project\\\\medassist-backend\\\\dokumentasi\\\\Auth\\\\AuthController\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Output \"done\")",
+      "PowerShell(Remove-Item *)",
+      "Bash(Remove-Item *)"
     ]
   }
 }

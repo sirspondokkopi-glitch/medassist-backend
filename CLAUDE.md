@@ -159,34 +159,36 @@ Setiap API yang dibuat **wajib didokumentasikan** dalam folder `dokumentasi/` di
 
 ### Struktur folder
 
-Struktur folder dokumentasi **mengikuti persis** struktur folder controller di `app/Http/Controllers/`. Setiap file dokumentasi dibuat **per-function (endpoint)**, bukan per-controller.
+Struktur folder dokumentasi **mengikuti persis** struktur folder controller di `app/Http/Controllers/`. Setiap file dokumentasi dibuat **per-controller** (semua endpoint dalam 1 file `.md`), bukan per-function.
 
 ```
+app/Http/Controllers/Auth/AuthController.php
+  → dokumentasi/Auth/AuthController.md
+
 app/Http/Controllers/Master/CssdController.php
-  → dokumentasi/Master/CssdController/index.md
-  → dokumentasi/Master/CssdController/store.md
-  → dokumentasi/Master/CssdController/show.md
-  → dokumentasi/Master/CssdController/update.md
-  → dokumentasi/Master/CssdController/destroy.md
+  → dokumentasi/Master/CssdController.md
 
 app/Http/Controllers/Transaction/LoanController.php
-  → dokumentasi/Transaction/LoanController/index.md
-  → dokumentasi/Transaction/LoanController/store.md
-  ...
+  → dokumentasi/Transaction/LoanController.md
 ```
 
 ### Format file dokumentasi
 
-Setiap file `{functionName}.md` menggunakan format berikut:
+Setiap file `{ControllerName}.md` mendokumentasikan semua endpoint dalam satu controller, dengan format berikut:
 
 ```markdown
-# {FunctionName}
+# {ControllerName}
+
+**Controller:** App\Http\Controllers\{Subfolder}\{ControllerName}  
+**Base URL:** /api/...
+
+---
+
+## 1. {FunctionName}
 
 **Method:** GET / POST / PUT / DELETE  
 **Endpoint:** /api/...  
-**Controller:** App\Http\Controllers\{Subfolder}\{ControllerName}@{functionName}
-
-## Request
+**Auth:** Bearer Token (wajib) / Tidak diperlukan
 
 ### Headers
 | Key | Value | Required |
@@ -198,9 +200,9 @@ Setiap file `{functionName}.md` menggunakan format berikut:
 |-----------|------|----------|------------|
 | nama_field | string | Ya | ... |
 
-## Response
+### Response
 
-### Success (200)
+#### Success (200)
 \`\`\`json
 {
   "status": true,
@@ -209,7 +211,7 @@ Setiap file `{functionName}.md` menggunakan format berikut:
 }
 \`\`\`
 
-### Error (422)
+#### Error (422)
 \`\`\`json
 {
   "status": false,
@@ -218,7 +220,7 @@ Setiap file `{functionName}.md` menggunakan format berikut:
 }
 \`\`\`
 
-### Error (404)
+#### Error (404)
 \`\`\`json
 {
   "status": false,
@@ -226,7 +228,7 @@ Setiap file `{functionName}.md` menggunakan format berikut:
 }
 \`\`\`
 
-### Error (500)
+#### Error (500)
 \`\`\`json
 {
   "status": false,
@@ -236,6 +238,11 @@ Setiap file `{functionName}.md` menggunakan format berikut:
   "line": 42
 }
 \`\`\`
+
+---
+
+## 2. {FunctionName berikutnya}
+...
 ```
 
 ### Aturan
