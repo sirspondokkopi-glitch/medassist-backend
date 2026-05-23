@@ -9,7 +9,14 @@
 
 **Method:** POST  
 **Endpoint:** /api/auth/register  
-**Auth:** Tidak diperlukan
+**Auth:** Bearer Token (wajib)
+
+> Hanya admin yang sudah login yang dapat mendaftarkan akun baru. Endpoint ini tidak bisa diakses tanpa token.
+
+### Headers
+| Key | Value | Required |
+|-----|-------|----------|
+| Authorization | Bearer {token} | Ya |
 
 ### Body (JSON)
 | Parameter | Type | Required | Keterangan |
@@ -78,12 +85,24 @@
       "id": 1,
       "name": "John Doe",
       "username": "johndoe",
-      "email": "john@example.com"
+      "email": "john@example.com",
+      "authority_id": 1,
+      "authority": {
+        "id": 1,
+        "name": "Admin",
+        "description": "Administrator sistem",
+        "menus": [
+          { "id": 1, "name": "Dashboard", "url": "/dashboard", "icon": "home", "sort_order": 0 },
+          { "id": 2, "name": "Master Data", "url": "/master", "icon": "database", "sort_order": 1 }
+        ]
+      }
     },
     "token": "1|xxxxxxxxxxxxxxxx"
   }
 }
 ```
+
+> **Untuk Redux:** Simpan seluruh objek `data` ke store. Field `data.user.authority.menus` digunakan untuk membangun navigasi sidebar secara dinamis.
 
 #### Error (401) — Kredensial salah
 ```json
@@ -149,7 +168,16 @@
     "name": "John Doe",
     "username": "johndoe",
     "email": "john@example.com",
-    "email_verified_at": null,
+    "authority_id": 1,
+    "authority": {
+      "id": 1,
+      "name": "Admin",
+      "description": "Administrator sistem",
+      "menus": [
+        { "id": 1, "name": "Dashboard", "url": "/dashboard", "icon": "home", "sort_order": 0 },
+        { "id": 2, "name": "Master Data", "url": "/master", "icon": "database", "sort_order": 1 }
+      ]
+    },
     "deleted_by": null,
     "deleted_at": null,
     "created_at": "2026-05-22T08:00:00.000000Z",
@@ -157,6 +185,8 @@
   }
 }
 ```
+
+> **Untuk Redux:** Panggil endpoint ini saat aplikasi pertama kali dimuat (page refresh) untuk merehydrate state. Simpan hasilnya ke Redux store yang sama dengan saat login.
 
 ---
 

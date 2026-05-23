@@ -10,15 +10,15 @@ use App\Http\Controllers\Master\RoomController;
 use App\Http\Controllers\Master\UserController;
 use Illuminate\Support\Facades\Route;
 
-// Auth (publik)
+// Publik
 Route::prefix('auth')->controller(AuthController::class)->group(function () {
-    Route::post('register', 'register');
-    Route::post('login',    'login');
+    Route::post('login', 'login');
 });
 
-// Auth (butuh token)
+// Butuh token
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->controller(AuthController::class)->group(function () {
+        Route::post('register',         'register');
         Route::post('logout',           'logout');
         Route::get('me',                'me');
         Route::put('profile',           'updateProfile');
