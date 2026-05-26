@@ -22,9 +22,9 @@ class MenuSeeder extends Seeder
                 'icon'       => 'database',
                 'sort_order' => 2,
                 'children'   => [
-                    ['name' => 'Authority',        'url' => '/master/authorities',       'icon' => 'shield',        'sort_order' => 1],
-                    ['name' => 'Menu',             'url' => '/master/menus',             'icon' => 'menu',          'sort_order' => 2],
-                    ['name' => 'User',             'url' => '/master/users',             'icon' => 'users',         'sort_order' => 3],
+                    ['name' => 'Authority',        'url' => '/master/otoritas',       'icon' => 'shield',        'sort_order' => 1],
+                    ['name' => 'Menu',             'url' => '/master/menu',             'icon' => 'menu',          'sort_order' => 2],
+                    ['name' => 'User',             'url' => '/master/user',             'icon' => 'users',         'sort_order' => 3],
                 ],
             ],
         ];

@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('register',         'register');
         Route::post('logout',           'logout');
         Route::get('me',                'me');
+        Route::put('update',            'update');
         Route::put('profile',           'updateProfile');
         Route::put('change-password',   'changePassword');
     });

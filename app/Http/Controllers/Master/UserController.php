@@ -24,12 +24,12 @@ class UserController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name'         => 'required|string|max:255',
-            'username'     => 'required|string|max:100|unique:users,username',
-            'email'        => 'required|email|unique:users,email',
-            'no_telephone' => 'nullable|string|max:20',
-            'authority_id' => 'nullable|integer|exists:authorities,id',
-            'password'     => 'required|string|min:8|confirmed',
+            'name'                  => 'required|string|max:255',
+            'username'              => 'required|string|max:100|unique:users,username',
+            'email'                 => 'required|email|unique:users,email',
+            'authority_id'          => 'required|integer|exists:authorities,id',
+            'password'              => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string',
         ]);
 
         try {

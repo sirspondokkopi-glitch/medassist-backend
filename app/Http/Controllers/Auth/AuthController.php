@@ -57,7 +57,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.name', 'menus.url', 'menus.icon', 'menus.sort_order')->orderBy('menus.sort_order')]);
+        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.icon', 'menus.sort_order')->orderBy('menus.sort_order')]);
 
         return $this->success('Login berhasil.', [
             'user'  => $user,
@@ -78,9 +78,37 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.name', 'menus.url', 'menus.icon', 'menus.sort_order')->orderBy('menus.sort_order')]);
+        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.icon', 'menus.sort_order')->orderBy('menus.sort_order')]);
 
         return $this->success('Data user berhasil diambil.', $user);
+    }
+
+    public function update(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name'                  => 'required|string|max:255',
+            'username'              => 'required|string|max:255|unique:users,username,' . $user->id,
+            'email'                 => 'required|email|max:255|unique:users,email,' . $user->id,
+            'password'              => 'nullable|string|min:8|confirmed',
+            'password_confirmation' => 'required_with:password|string',
+        ]);
+
+        try {
+            $user->update([
+                'name'     => $validated['name'],
+                'username' => $validated['username'],
+                'email'    => $validated['email'],
+                ...(!empty($validated['password']) ? ['password' => Hash::make($validated['password'])] : []),
+            ]);
+
+            $user->refresh();
+
+            return $this->success('Data berhasil diperbarui.', $user);
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
+        }
     }
 
     public function updateProfile(Request $request): JsonResponse

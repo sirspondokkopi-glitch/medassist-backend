@@ -89,11 +89,49 @@
       "authority_id": 1,
       "authority": {
         "id": 1,
-        "name": "Admin",
-        "description": "Administrator sistem",
+        "name": "Administrator",
+        "description": "Akses penuh ke seluruh fitur sistem",
         "menus": [
-          { "id": 1, "name": "Dashboard", "url": "/dashboard", "icon": "home", "sort_order": 0 },
-          { "id": 2, "name": "Master Data", "url": "/master", "icon": "database", "sort_order": 1 }
+          {
+            "id": 1,
+            "parent_id": null,
+            "name": "Dashboard",
+            "url": "/dashboard",
+            "icon": "dashboard",
+            "sort_order": 1
+          },
+          {
+            "id": 2,
+            "parent_id": null,
+            "name": "Master Data",
+            "url": null,
+            "icon": "database",
+            "sort_order": 2
+          },
+          {
+            "id": 3,
+            "parent_id": 2,
+            "name": "Authority",
+            "url": "/master/authorities",
+            "icon": "shield",
+            "sort_order": 1
+          },
+          {
+            "id": 4,
+            "parent_id": 2,
+            "name": "Menu",
+            "url": "/master/menus",
+            "icon": "menu",
+            "sort_order": 2
+          },
+          {
+            "id": 5,
+            "parent_id": 2,
+            "name": "User",
+            "url": "/master/users",
+            "icon": "users",
+            "sort_order": 3
+          }
         ]
       }
     },
@@ -102,13 +140,54 @@
 }
 ```
 
-> **Untuk Redux:** Simpan seluruh objek `data` ke store. Field `data.user.authority.menus` digunakan untuk membangun navigasi sidebar secara dinamis.
+> **Catatan penting untuk Frontend:**
+>
+> Array `menus` dikembalikan dalam bentuk **flat list** (bukan nested). Setiap item memiliki field `parent_id`:
+> - `parent_id: null` → menu utama (top-level), tampilkan di sidebar
+> - `parent_id: <id>` → sub-menu (children) dari menu dengan id tersebut
+>
+> Frontend harus membangun tree secara manual dari flat list ini. Contoh fungsi JavaScript:
+>
+> ```js
+> function buildMenuTree(menus) {
+>   const map = {};
+>   const roots = [];
+>
+>   menus.forEach(menu => {
+>     map[menu.id] = { ...menu, children: [] };
+>   });
+>
+>   menus.forEach(menu => {
+>     if (menu.parent_id === null) {
+>       roots.push(map[menu.id]);
+>     } else if (map[menu.parent_id]) {
+>       map[menu.parent_id].children.push(map[menu.id]);
+>     }
+>   });
+>
+>   return roots;
+> }
+>
+> // Penggunaan setelah login:
+> const menuTree = buildMenuTree(data.user.authority.menus);
+> // Simpan menuTree ke Redux store untuk render sidebar
+> ```
+>
+> **Untuk Redux:** Simpan seluruh objek `data` ke store. Gunakan `data.user.authority.menus` (flat) sebagai source of truth, lalu bangun tree-nya saat render sidebar.
 
 #### Error (401) — Kredensial salah
 ```json
 {
   "status": false,
   "message": "Email/username atau password salah."
+}
+```
+
+#### Error (403) — Akun dinonaktifkan
+```json
+{
+  "status": false,
+  "message": "Akun Anda telah dinonaktifkan."
 }
 ```
 
@@ -171,11 +250,49 @@
     "authority_id": 1,
     "authority": {
       "id": 1,
-      "name": "Admin",
-      "description": "Administrator sistem",
+      "name": "Administrator",
+      "description": "Akses penuh ke seluruh fitur sistem",
       "menus": [
-        { "id": 1, "name": "Dashboard", "url": "/dashboard", "icon": "home", "sort_order": 0 },
-        { "id": 2, "name": "Master Data", "url": "/master", "icon": "database", "sort_order": 1 }
+        {
+          "id": 1,
+          "parent_id": null,
+          "name": "Dashboard",
+          "url": "/dashboard",
+          "icon": "dashboard",
+          "sort_order": 1
+        },
+        {
+          "id": 2,
+          "parent_id": null,
+          "name": "Master Data",
+          "url": null,
+          "icon": "database",
+          "sort_order": 2
+        },
+        {
+          "id": 3,
+          "parent_id": 2,
+          "name": "Authority",
+          "url": "/master/authorities",
+          "icon": "shield",
+          "sort_order": 1
+        },
+        {
+          "id": 4,
+          "parent_id": 2,
+          "name": "Menu",
+          "url": "/master/menus",
+          "icon": "menu",
+          "sort_order": 2
+        },
+        {
+          "id": 5,
+          "parent_id": 2,
+          "name": "User",
+          "url": "/master/users",
+          "icon": "users",
+          "sort_order": 3
+        }
       ]
     },
     "deleted_by": null,
@@ -186,11 +303,80 @@
 }
 ```
 
-> **Untuk Redux:** Panggil endpoint ini saat aplikasi pertama kali dimuat (page refresh) untuk merehydrate state. Simpan hasilnya ke Redux store yang sama dengan saat login.
+> **Untuk Redux:** Panggil endpoint ini saat aplikasi pertama kali dimuat (page refresh) untuk merehydrate state. Struktur `menus` sama dengan response login — flat list dengan `parent_id`. Gunakan fungsi `buildMenuTree` yang sama untuk rebuild sidebar.
 
 ---
 
-## 5. Update Profile
+## 5. Update (Profile + Password)
+
+**Method:** PUT  
+**Endpoint:** /api/auth/update  
+**Auth:** Bearer Token (wajib)
+
+> Endpoint tunggal untuk memperbarui nama, username, email, dan password sekaligus. Field password bersifat opsional — jika tidak dikirim, password tidak akan berubah.
+
+### Headers
+| Key | Value | Required |
+|-----|-------|----------|
+| Authorization | Bearer {token} | Ya |
+
+### Body (JSON)
+| Parameter | Type | Required | Keterangan |
+|-----------|------|----------|------------|
+| name | string | Ya | Nama lengkap |
+| username | string | Ya | Username unik (kecuali milik sendiri) |
+| email | string | Ya | Email unik (kecuali milik sendiri) |
+| password | string | Tidak | Password baru, minimal 8 karakter |
+| password_confirmation | string | Kondisional | Wajib jika `password` diisi |
+
+### Response
+
+#### Success (200) — hanya update profil
+```json
+{
+  "status": true,
+  "message": "Data berhasil diperbarui.",
+  "data": {
+    "id": 1,
+    "name": "John Updated",
+    "username": "johnupdated",
+    "email": "johnupdated@example.com",
+    "updated_at": "2026-05-26T09:00:00.000000Z"
+  }
+}
+```
+
+#### Success (200) — update profil + password
+```json
+{
+  "status": true,
+  "message": "Data berhasil diperbarui.",
+  "data": {
+    "id": 1,
+    "name": "John Updated",
+    "username": "johnupdated",
+    "email": "johnupdated@example.com",
+    "updated_at": "2026-05-26T09:05:00.000000Z"
+  }
+}
+```
+
+> Token lama **tetap aktif** setelah update password melalui endpoint ini. Jika ingin mencabut semua sesi lain, gunakan endpoint `PUT /api/auth/change-password`.
+
+#### Error (422) — validasi gagal
+```json
+{
+  "status": false,
+  "message": "Data yang dikirim tidak valid.",
+  "errors": {
+    "username": ["The username has already been taken."]
+  }
+}
+```
+
+---
+
+## 6. Update Profile
 
 **Method:** PUT  
 **Endpoint:** /api/auth/profile  
@@ -221,6 +407,17 @@
     "username": "johnupdated",
     "email": "johnupdated@example.com",
     "updated_at": "2026-05-22T09:00:00.000000Z"
+  }
+}
+```
+
+#### Error (422)
+```json
+{
+  "status": false,
+  "message": "Data yang dikirim tidak valid.",
+  "errors": {
+    "username": ["The username has already been taken."]
   }
 }
 ```

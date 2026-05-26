@@ -18,10 +18,9 @@
 | name | string | Ya | Nama lengkap user |
 | username | string | Ya | Username unik, maks 100 karakter |
 | email | string | Ya | Email unik |
-| no_telephone | string | Tidak | Nomor telepon, maks 20 karakter |
-| authority_id | integer | Tidak | ID otoritas user |
+| authority_id | integer | Ya | ID otoritas user (harus ada di tabel authorities) |
 | password | string | Ya | Minimal 8 karakter |
-| password_confirmation | string | Ya | Konfirmasi password |
+| password_confirmation | string | Ya | Harus sama dengan `password` |
 
 ## Response
 
@@ -35,9 +34,14 @@
     "name": "John Doe",
     "username": "johndoe",
     "email": "john@example.com",
-    "no_telephone": "081234567890",
     "authority_id": 1,
-    "authority": { "id": 1, "name": "Admin" }
+    "authority": {
+      "id": 1,
+      "name": "Administrator",
+      "description": "Akses penuh ke seluruh fitur sistem"
+    },
+    "created_at": "2026-05-26T08:00:00.000000Z",
+    "updated_at": "2026-05-26T08:00:00.000000Z"
   }
 }
 ```
@@ -48,7 +52,8 @@
   "status": false,
   "message": "Data yang dikirim tidak valid.",
   "errors": {
-    "username": ["The username has already been taken."]
+    "username": ["The username has already been taken."],
+    "authority_id": ["The authority id field is required."]
   }
 }
 ```
