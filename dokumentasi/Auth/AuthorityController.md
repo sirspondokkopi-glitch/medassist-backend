@@ -87,14 +87,14 @@ Membuat otoritas baru dan (opsional) langsung melampirkan menu-menu yang boleh d
 |-----------|------|----------|------------|
 | name | string | Ya | Nama otoritas, unik, maks 100 karakter |
 | description | string | Tidak | Deskripsi otoritas, maks 255 karakter |
-| menu_ids | array of integer | Tidak | ID menu yang bisa diakses otoritas ini. Ambil dari endpoint `/api/master/menus` |
+| menu_ids | array of integer | Tidak | ID menu yang bisa diakses otoritas ini. Ambil dari endpoint `GET /api/master/menus` |
 
 ### Contoh Request Body
 ```json
 {
   "name": "Perawat",
   "description": "Akses untuk perawat ruangan",
-  "menu_ids": [1, 3, 5]
+  "menu_ids": [1, 2, 3]
 }
 ```
 
@@ -116,8 +116,8 @@ Membuat otoritas baru dan (opsional) langsung melampirkan menu-menu yang boleh d
     "created_at": "2026-05-23T00:00:00.000000Z",
     "updated_at": "2026-05-23T00:00:00.000000Z",
     "menus": [
-      { "id": 1, "name": "Dashboard", "url": "/dashboard", "icon": "home", "sort_order": 0 },
-      { "id": 3, "name": "Instrument", "url": "/instrument", "icon": "tool", "sort_order": 2 }
+      { "id": 1, "title_menu_id": 1, "name": "Dashboard", "url": "/dashboard", "sort_order": 1 },
+      { "id": 2, "title_menu_id": 2, "name": "Authority", "url": "/master/otoritas", "sort_order": 1 }
     ]
   }
 }
@@ -186,8 +186,9 @@ Mengambil detail satu otoritas beserta **seluruh menu** yang terlampir padanya.
     "created_at": "2026-05-23T00:00:00.000000Z",
     "updated_at": "2026-05-23T00:00:00.000000Z",
     "menus": [
-      { "id": 1, "name": "Dashboard", "url": "/dashboard", "icon": "home", "sort_order": 0 },
-      { "id": 2, "name": "Master Data", "url": "/master", "icon": "database", "sort_order": 1 }
+      { "id": 1, "title_menu_id": 1, "name": "Dashboard", "url": "/dashboard", "sort_order": 1 },
+      { "id": 2, "title_menu_id": 2, "name": "Authority", "url": "/master/otoritas", "sort_order": 1 },
+      { "id": 3, "title_menu_id": 2, "name": "Menu", "url": "/master/menu", "sort_order": 2 }
     ]
   }
 }
@@ -238,7 +239,7 @@ Memperbarui data otoritas. Field `menu_ids` bersifat **replace-all** (sync): daf
 ```json
 {
   "name": "Perawat Senior",
-  "menu_ids": [1, 3, 5, 7]
+  "menu_ids": [1, 2, 3, 4]
 }
 ```
 
@@ -254,10 +255,10 @@ Memperbarui data otoritas. Field `menu_ids` bersifat **replace-all** (sync): daf
     "name": "Perawat Senior",
     "description": "Akses untuk perawat ruangan",
     "menus": [
-      { "id": 1, "name": "Dashboard", "url": "/dashboard" },
-      { "id": 3, "name": "Instrument", "url": "/instrument" },
-      { "id": 5, "name": "Laporan", "url": "/laporan" },
-      { "id": 7, "name": "Peminjaman", "url": "/peminjaman" }
+      { "id": 1, "title_menu_id": 1, "name": "Dashboard", "url": "/dashboard", "sort_order": 1 },
+      { "id": 2, "title_menu_id": 2, "name": "Authority", "url": "/master/otoritas", "sort_order": 1 },
+      { "id": 3, "title_menu_id": 2, "name": "Menu", "url": "/master/menu", "sort_order": 2 },
+      { "id": 4, "title_menu_id": 2, "name": "User", "url": "/master/user", "sort_order": 3 }
     ]
   }
 }
@@ -321,7 +322,8 @@ Menghapus otoritas secara soft delete. Data tidak benar-benar dihapus dari datab
 ```json
 {
   "status": true,
-  "message": "Otoritas berhasil dihapus."
+  "message": "Otoritas berhasil dihapus.",
+  "data": null
 }
 ```
 
@@ -352,6 +354,7 @@ Menghapus otoritas secara soft delete. Data tidak benar-benar dihapus dari datab
 
 ```
 GET /api/master/authorities          → tampilkan daftar otoritas
+GET /api/master/title-menus          → ambil semua title menu (untuk grouping checkbox)
 GET /api/master/menus                → ambil semua menu (untuk form checkbox)
 ```
 
@@ -378,4 +381,4 @@ DELETE /api/master/authorities/{id}
 ### 5. Gunakan otoritas di User
 
 Saat membuat/edit user, assign `authority_id` ke user melalui endpoint UserController.  
-Setelah user login, frontend bisa membaca `user.authority.menus` dari respons `GET /api/auth/me` untuk membangun navigasi dinamis.
+Setelah user login, frontend bisa membaca `user.authority.menus` dari respons `GET /api/auth/me` untuk membangun navigasi dinamis berdasarkan `title_menu_id`.

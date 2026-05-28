@@ -8,13 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('menus', function (Blueprint $table) {
+        Schema::create('title_menuses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('title_menu_id')->nullable()->constrained('title_menuses')->nullOnDelete();
-            $table->foreignId('parent_id')->nullable()->constrained('menus')->nullOnDelete();
-            $table->string('name');
-            $table->string('url')->nullable();
+            $table->string('title');
+            $table->string('icon')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
@@ -25,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('menus');
+        Schema::dropIfExists('title_menuses');
     }
 };

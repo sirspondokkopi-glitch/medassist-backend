@@ -1,8 +1,9 @@
 # Index
 
 **Method:** GET  
-**Endpoint:** /api/master/menus  
-**Controller:** App\Http\Controllers\Master\MenuController@index
+**Endpoint:** /api/master/title-menus  
+**Controller:** App\Http\Controllers\Master\TitleMenuController@index  
+**Auth:** Bearer Token (wajib)
 
 ## Request
 
@@ -14,7 +15,7 @@
 ### Query Parameters
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
-| search | string | Tidak | Filter berdasarkan nama menu |
+| search | string | Tidak | Filter berdasarkan title |
 | page | integer | Tidak | Halaman (default: 1) |
 
 ## Response
@@ -23,19 +24,19 @@
 ```json
 {
   "status": true,
-  "message": "Berhasil mengambil data menu.",
+  "message": "Berhasil mengambil data title menu.",
   "data": {
     "current_page": 1,
     "data": [
       {
         "id": 1,
-        "title_menu_id": 1,
-        "parent_id": null,
-        "name": "Dashboard",
-        "url": "/dashboard",
-        "sort_order": 0,
-        "title_menu": { "id": 1, "title": "Master Data" },
-        "parent": null
+        "title": "Master Data",
+        "icon": "database",
+        "sort_order": 1,
+        "is_active": true,
+        "menus": [
+          { "id": 1, "name": "Authority", "url": "/master/otoritas", "sort_order": 1 }
+        ]
       }
     ],
     "last_page": 1,

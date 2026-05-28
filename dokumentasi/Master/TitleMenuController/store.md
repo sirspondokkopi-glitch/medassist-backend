@@ -1,8 +1,9 @@
 # Store
 
 **Method:** POST  
-**Endpoint:** /api/master/menus  
-**Controller:** App\Http\Controllers\Master\MenuController@store
+**Endpoint:** /api/master/title-menus  
+**Controller:** App\Http\Controllers\Master\TitleMenuController@store  
+**Auth:** Bearer Token (wajib)
 
 ## Request
 
@@ -15,11 +16,10 @@
 ### Body Parameters
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
-| title_menu_id | integer | Tidak | ID title menu (group header) |
-| parent_id | integer | Tidak | ID menu parent (untuk sub-menu) |
-| name | string | Ya | Nama menu, maks 100 karakter |
-| url | string | Tidak | URL / route menu, maks 255 karakter |
+| title | string | Ya | Nama title menu, maks 100 karakter |
+| icon | string | Tidak | Nama icon, maks 100 karakter |
 | sort_order | integer | Tidak | Urutan tampil (default: 0) |
+| is_active | boolean | Tidak | Status aktif (default: true) |
 
 ## Response
 
@@ -27,16 +27,13 @@
 ```json
 {
   "status": true,
-  "message": "Menu berhasil dibuat.",
+  "message": "Title menu berhasil dibuat.",
   "data": {
-    "id": 2,
-    "title_menu_id": 1,
-    "parent_id": null,
-    "name": "Instrument",
-    "url": "/master/instrument",
+    "id": 1,
+    "title": "Master Data",
+    "icon": "database",
     "sort_order": 1,
-    "title_menu": { "id": 1, "title": "Master Data" },
-    "parent": null
+    "is_active": true
   }
 }
 ```
@@ -47,7 +44,7 @@
   "status": false,
   "message": "Data yang dikirim tidak valid.",
   "errors": {
-    "name": ["The name field is required."]
+    "title": ["The title field is required."]
   }
 }
 ```

@@ -1,8 +1,9 @@
 # Update
 
 **Method:** PUT / PATCH  
-**Endpoint:** /api/master/menus/{id}  
-**Controller:** App\Http\Controllers\Master\MenuController@update
+**Endpoint:** /api/master/title-menus/{id}  
+**Controller:** App\Http\Controllers\Master\TitleMenuController@update  
+**Auth:** Bearer Token (wajib)
 
 ## Request
 
@@ -15,16 +16,15 @@
 ### Path Parameters
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
-| id | integer | Ya | ID menu |
+| id | integer | Ya | ID title menu |
 
 ### Body Parameters
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
-| title_menu_id | integer | Tidak | ID title menu (group header) |
-| parent_id | integer | Tidak | ID menu parent |
-| name | string | Tidak | Nama menu |
-| url | string | Tidak | URL / route menu |
+| title | string | Tidak | Nama title menu |
+| icon | string | Tidak | Nama icon |
 | sort_order | integer | Tidak | Urutan tampil |
+| is_active | boolean | Tidak | Status aktif |
 
 ## Response
 
@@ -32,17 +32,16 @@
 ```json
 {
   "status": true,
-  "message": "Menu berhasil diperbarui.",
+  "message": "Title menu berhasil diperbarui.",
   "data": {
-    "id": 2,
-    "title_menu_id": 1,
-    "parent_id": null,
-    "name": "Instrument",
-    "url": "/master/instrument",
+    "id": 1,
+    "title": "Master Data",
+    "icon": "database",
     "sort_order": 1,
-    "title_menu": { "id": 1, "title": "Master Data" },
-    "parent": null,
-    "children": []
+    "is_active": true,
+    "menus": [
+      { "id": 1, "name": "Authority", "url": "/master/otoritas", "sort_order": 1 }
+    ]
   }
 }
 ```

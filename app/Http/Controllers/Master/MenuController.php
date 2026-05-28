@@ -22,16 +22,16 @@ class MenuController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'parent_id'  => 'nullable|integer|exists:menus,id',
-            'name'       => 'required|string|max:100',
-            'url'        => 'nullable|string|max:255',
-            'icon'       => 'nullable|string|max:100',
-            'sort_order' => 'nullable|integer|min:0',
+            'title_menu_id' => 'nullable|integer|exists:title_menuses,id',
+            'parent_id'     => 'nullable|integer|exists:menus,id',
+            'name'          => 'required|string|max:100',
+            'url'           => 'nullable|string|max:255',
+            'sort_order'    => 'nullable|integer|min:0',
         ]);
 
         try {
             $menu = Menu::create($validated);
-            $menu->load('parent');
+            $menu->load(['titleMenu', 'parent']);
 
             return $this->success('Menu berhasil dibuat.', $menu, 201);
         } catch (\Throwable $e) {
@@ -49,16 +49,16 @@ class MenuController extends Controller
     public function update(Request $request, Menu $menu): JsonResponse
     {
         $validated = $request->validate([
-            'parent_id'  => 'nullable|integer|exists:menus,id',
-            'name'       => 'sometimes|required|string|max:100',
-            'url'        => 'nullable|string|max:255',
-            'icon'       => 'nullable|string|max:100',
-            'sort_order' => 'nullable|integer|min:0',
+            'title_menu_id' => 'nullable|integer|exists:title_menuses,id',
+            'parent_id'     => 'nullable|integer|exists:menus,id',
+            'name'          => 'sometimes|required|string|max:100',
+            'url'           => 'nullable|string|max:255',
+            'sort_order'    => 'nullable|integer|min:0',
         ]);
 
         try {
             $menu->update($validated);
-            $menu->load(['parent', 'children']);
+            $menu->load(['titleMenu', 'parent', 'children']);
 
             return $this->success('Menu berhasil diperbarui.', $menu);
         } catch (\Throwable $e) {

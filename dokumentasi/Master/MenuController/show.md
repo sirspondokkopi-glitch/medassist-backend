@@ -25,11 +25,12 @@
   "message": "Berhasil mengambil detail menu.",
   "data": {
     "id": 1,
+    "title_menu_id": 1,
     "parent_id": null,
     "name": "Master Data",
     "url": null,
-    "icon": "folder",
     "sort_order": 0,
+    "title_menu": { "id": 1, "title": "Master Data" },
     "parent": null,
     "children": [
       { "id": 2, "name": "Instrument", "url": "/master/instrument", "sort_order": 1 }

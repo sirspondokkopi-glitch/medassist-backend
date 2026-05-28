@@ -57,7 +57,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.icon', 'menus.sort_order')->orderBy('menus.sort_order')]);
+        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.title_menu_id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.sort_order')->orderBy('menus.sort_order')]);
 
         return $this->success('Login berhasil.', [
             'user'  => $user,
@@ -78,7 +78,7 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.icon', 'menus.sort_order')->orderBy('menus.sort_order')]);
+        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.title_menu_id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.sort_order')->orderBy('menus.sort_order')]);
 
         return $this->success('Data user berhasil diambil.', $user);
     }

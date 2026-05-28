@@ -94,42 +94,34 @@
         "menus": [
           {
             "id": 1,
+            "title_menu_id": 1,
             "parent_id": null,
             "name": "Dashboard",
             "url": "/dashboard",
-            "icon": "dashboard",
             "sort_order": 1
           },
           {
             "id": 2,
+            "title_menu_id": 2,
             "parent_id": null,
-            "name": "Master Data",
-            "url": null,
-            "icon": "database",
-            "sort_order": 2
-          },
-          {
-            "id": 3,
-            "parent_id": 2,
             "name": "Authority",
-            "url": "/master/authorities",
-            "icon": "shield",
+            "url": "/master/otoritas",
             "sort_order": 1
           },
           {
-            "id": 4,
-            "parent_id": 2,
+            "id": 3,
+            "title_menu_id": 2,
+            "parent_id": null,
             "name": "Menu",
-            "url": "/master/menus",
-            "icon": "menu",
+            "url": "/master/menu",
             "sort_order": 2
           },
           {
-            "id": 5,
-            "parent_id": 2,
+            "id": 4,
+            "title_menu_id": 2,
+            "parent_id": null,
             "name": "User",
-            "url": "/master/users",
-            "icon": "users",
+            "url": "/master/user",
             "sort_order": 3
           }
         ]
@@ -142,38 +134,22 @@
 
 > **Catatan penting untuk Frontend:**
 >
-> Array `menus` dikembalikan dalam bentuk **flat list** (bukan nested). Setiap item memiliki field `parent_id`:
-> - `parent_id: null` → menu utama (top-level), tampilkan di sidebar
-> - `parent_id: <id>` → sub-menu (children) dari menu dengan id tersebut
+> Array `menus` dikembalikan dalam bentuk **flat list**. Setiap item memiliki field `title_menu_id` yang menunjuk ke group/section sidebar-nya (dari tabel `title_menuses`).
 >
-> Frontend harus membangun tree secara manual dari flat list ini. Contoh fungsi JavaScript:
+> Untuk membangun sidebar, kelompokkan menu berdasarkan `title_menu_id`. Ambil data title group dari endpoint `GET /api/master/title-menus`. Contoh fungsi JavaScript:
 >
 > ```js
-> function buildMenuTree(menus) {
->   const map = {};
->   const roots = [];
->
->   menus.forEach(menu => {
->     map[menu.id] = { ...menu, children: [] };
->   });
->
->   menus.forEach(menu => {
->     if (menu.parent_id === null) {
->       roots.push(map[menu.id]);
->     } else if (map[menu.parent_id]) {
->       map[menu.parent_id].children.push(map[menu.id]);
->     }
->   });
->
->   return roots;
+> function groupMenusByTitle(titleMenus, menus) {
+>   return titleMenus.map(title => ({
+>     ...title,
+>     menus: menus.filter(m => m.title_menu_id === title.id),
+>   }));
 > }
 >
 > // Penggunaan setelah login:
-> const menuTree = buildMenuTree(data.user.authority.menus);
-> // Simpan menuTree ke Redux store untuk render sidebar
+> const sidebar = groupMenusByTitle(titleMenus, data.user.authority.menus);
+> // Simpan sidebar ke Redux store untuk render navigasi
 > ```
->
-> **Untuk Redux:** Simpan seluruh objek `data` ke store. Gunakan `data.user.authority.menus` (flat) sebagai source of truth, lalu bangun tree-nya saat render sidebar.
 
 #### Error (401) — Kredensial salah
 ```json
@@ -218,7 +194,7 @@
 ```json
 {
   "status": false,
-  "message": "Unauthenticated. Silakan login terlebih dahulu."
+  "message": "Unauthenticated."
 }
 ```
 
@@ -255,42 +231,34 @@
       "menus": [
         {
           "id": 1,
+          "title_menu_id": 1,
           "parent_id": null,
           "name": "Dashboard",
           "url": "/dashboard",
-          "icon": "dashboard",
           "sort_order": 1
         },
         {
           "id": 2,
+          "title_menu_id": 2,
           "parent_id": null,
-          "name": "Master Data",
-          "url": null,
-          "icon": "database",
-          "sort_order": 2
-        },
-        {
-          "id": 3,
-          "parent_id": 2,
           "name": "Authority",
-          "url": "/master/authorities",
-          "icon": "shield",
+          "url": "/master/otoritas",
           "sort_order": 1
         },
         {
-          "id": 4,
-          "parent_id": 2,
+          "id": 3,
+          "title_menu_id": 2,
+          "parent_id": null,
           "name": "Menu",
-          "url": "/master/menus",
-          "icon": "menu",
+          "url": "/master/menu",
           "sort_order": 2
         },
         {
-          "id": 5,
-          "parent_id": 2,
+          "id": 4,
+          "title_menu_id": 2,
+          "parent_id": null,
           "name": "User",
-          "url": "/master/users",
-          "icon": "users",
+          "url": "/master/user",
           "sort_order": 3
         }
       ]
@@ -303,7 +271,7 @@
 }
 ```
 
-> **Untuk Redux:** Panggil endpoint ini saat aplikasi pertama kali dimuat (page refresh) untuk merehydrate state. Struktur `menus` sama dengan response login — flat list dengan `parent_id`. Gunakan fungsi `buildMenuTree` yang sama untuk rebuild sidebar.
+> **Untuk Redux:** Panggil endpoint ini saat aplikasi pertama kali dimuat (page refresh) untuk merehydrate state. Struktur `menus` sama dengan response login — flat list dengan `title_menu_id`. Gunakan fungsi `groupMenusByTitle` yang sama untuk rebuild sidebar.
 
 ---
 
@@ -331,7 +299,7 @@
 
 ### Response
 
-#### Success (200) — hanya update profil
+#### Success (200)
 ```json
 {
   "status": true,
@@ -346,24 +314,9 @@
 }
 ```
 
-#### Success (200) — update profil + password
-```json
-{
-  "status": true,
-  "message": "Data berhasil diperbarui.",
-  "data": {
-    "id": 1,
-    "name": "John Updated",
-    "username": "johnupdated",
-    "email": "johnupdated@example.com",
-    "updated_at": "2026-05-26T09:05:00.000000Z"
-  }
-}
-```
+> Token lama **tetap aktif** setelah update melalui endpoint ini. Jika ingin mencabut semua sesi lain, gunakan endpoint `PUT /api/auth/change-password`.
 
-> Token lama **tetap aktif** setelah update password melalui endpoint ini. Jika ingin mencabut semua sesi lain, gunakan endpoint `PUT /api/auth/change-password`.
-
-#### Error (422) — validasi gagal
+#### Error (422)
 ```json
 {
   "status": false,
@@ -424,7 +377,7 @@
 
 ---
 
-## 6. Change Password
+## 7. Change Password
 
 **Method:** PUT  
 **Endpoint:** /api/auth/change-password  

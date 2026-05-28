@@ -3,41 +3,45 @@
 namespace Database\Seeders;
 
 use App\Models\Menu;
+use App\Models\TitleMenus;
 use Illuminate\Database\Seeder;
 
 class MenuSeeder extends Seeder
 {
     public function run(): void
     {
+        $dashboard  = TitleMenus::where('title', 'Dashboard')->first();
+        $masterData = TitleMenus::where('title', 'Master Data')->first();
+
         $menus = [
             [
-                'name'       => 'Dashboard',
-                'url'        => '/dashboard',
-                'icon'       => 'dashboard',
-                'sort_order' => 1,
+                'title_menu_id' => $dashboard?->id,
+                'name'          => 'Dashboard',
+                'url'           => '/dashboard',
+                'sort_order'    => 1,
             ],
             [
-                'name'       => 'Master Data',
-                'url'        => null,
-                'icon'       => 'database',
-                'sort_order' => 2,
-                'children'   => [
-                    ['name' => 'Authority',        'url' => '/master/otoritas',       'icon' => 'shield',        'sort_order' => 1],
-                    ['name' => 'Menu',             'url' => '/master/menu',             'icon' => 'menu',          'sort_order' => 2],
-                    ['name' => 'User',             'url' => '/master/user',             'icon' => 'users',         'sort_order' => 3],
-                ],
+                'title_menu_id' => $masterData?->id,
+                'name'          => 'Authority',
+                'url'           => '/master/otoritas',
+                'sort_order'    => 1,
+            ],
+            [
+                'title_menu_id' => $masterData?->id,
+                'name'          => 'Menu',
+                'url'           => '/master/menu',
+                'sort_order'    => 2,
+            ],
+            [
+                'title_menu_id' => $masterData?->id,
+                'name'          => 'User',
+                'url'           => '/master/user',
+                'sort_order'    => 3,
             ],
         ];
 
         foreach ($menus as $menuData) {
-            $children = $menuData['children'] ?? [];
-            unset($menuData['children']);
-
-            $parent = Menu::create($menuData);
-
-            foreach ($children as $child) {
-                Menu::create(array_merge($child, ['parent_id' => $parent->id]));
-            }
+            Menu::create($menuData);
         }
     }
 }
