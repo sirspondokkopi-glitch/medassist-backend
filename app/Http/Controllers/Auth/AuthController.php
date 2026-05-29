@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\TitleMenus;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,8 +42,9 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
+            'username'    => 'required|string',
+            'password'    => 'required|string',
+            'device_name' => 'nullable|string|max:100',
         ]);
 
         $user = User::where('username', $validated['username'])->first();
@@ -55,14 +57,58 @@ class AuthController extends Controller
             return $this->error('Akun Anda telah dinonaktifkan.', 403);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.title_menu_id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.sort_order')->orderBy('menus.sort_order')]);
+        $tokenName = $validated['device_name'] ?? 'auth_token';
+        $token     = $user->createToken($tokenName)->plainTextToken;
 
         return $this->success('Login berhasil.', [
-            'user'  => $user,
-            'token' => $token,
+            'username' => $user->username,
+            'token'    => $token,
+            'menus'    => $this->buildMenuResponse($user),
         ]);
+    }
+
+    public function sessions(Request $request): JsonResponse
+    {
+        $currentId = $request->user()->currentAccessToken()->id;
+
+        $sessions = $request->user()->tokens()
+            ->orderByDesc('last_used_at')
+            ->get()
+            ->map(fn ($token) => [
+                'id'          => $token->id,
+                'device_name' => $token->name,
+                'last_used'   => $token->last_used_at?->toDateTimeString(),
+                'created_at'  => $token->created_at->toDateTimeString(),
+                'is_current'  => $token->id === $currentId,
+            ]);
+
+        return $this->success('Berhasil mengambil daftar sesi aktif.', $sessions);
+    }
+
+    public function revokeSession(Request $request, int $id): JsonResponse
+    {
+        $token = $request->user()->tokens()->find($id);
+
+        if (!$token) {
+            return $this->error('Sesi tidak ditemukan.', 404);
+        }
+
+        try {
+            $token->delete();
+            return $this->success('Sesi berhasil dihapus.');
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
+        }
+    }
+
+    public function revokeAllSessions(Request $request): JsonResponse
+    {
+        try {
+            $request->user()->tokens()->delete();
+            return $this->success('Semua sesi berhasil dihapus.');
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
+        }
     }
 
     public function logout(Request $request): JsonResponse
@@ -78,9 +124,47 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load(['authority.menus' => fn ($q) => $q->select('menus.id', 'menus.title_menu_id', 'menus.parent_id', 'menus.name', 'menus.url', 'menus.sort_order')->orderBy('menus.sort_order')]);
 
-        return $this->success('Data user berhasil diambil.', $user);
+        return $this->success('Data user berhasil diambil.', [
+            'username' => $user->username,
+            'menus'    => $this->buildMenuResponse($user),
+        ]);
+    }
+
+    private function buildMenuResponse(User $user): array
+    {
+        $user->load(['authority.menus' => fn ($q) => $q->orderBy('sort_order')]);
+
+        $allMenus    = $user->authority?->menus ?? collect();
+        $parentMenus = $allMenus->whereNull('parent_id');
+        $childMenus  = $allMenus->whereNotNull('parent_id');
+
+        $grouped      = $parentMenus->groupBy('title_menu_id');
+        $titleMenuIds = $grouped->keys()->filter()->values()->all();
+
+        $titleMenus = TitleMenus::whereIn('id', $titleMenuIds)->orderBy('sort_order')->get();
+
+        return $titleMenus->map(fn ($title) => [
+            'title_name' => $title->title,
+            'icon'       => $title->icon,
+            'is_open'    => (bool) $title->is_open,
+            'menus'      => $grouped->get($title->id, collect())
+                ->map(function ($menu) use ($childMenus) {
+                    $children = $childMenus->where('parent_id', $menu->id)->values();
+                    $hasChildren = $children->isNotEmpty();
+
+                    return [
+                        'parent_name'   => $menu->name,
+                        'redirect_link' => $hasChildren ? null : $menu->url,
+                        'sub_menu'      => $hasChildren
+                            ? $children->map(fn ($child) => [
+                                'name'          => $child->name,
+                                'redirect_link' => $child->url,
+                            ])->values()->toArray()
+                            : null,
+                    ];
+                })->values()->toArray(),
+        ])->values()->toArray();
     }
 
     public function update(Request $request): JsonResponse

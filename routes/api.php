@@ -19,12 +19,15 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
 // Butuh token
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->controller(AuthController::class)->group(function () {
-        Route::post('register',         'register');
-        Route::post('logout',           'logout');
-        Route::get('me',                'me');
-        Route::put('update',            'update');
-        Route::put('profile',           'updateProfile');
-        Route::put('change-password',   'changePassword');
+        Route::post('register',             'register');
+        Route::post('logout',               'logout');
+        Route::get('me',                    'me');
+        Route::put('update',                'update');
+        Route::put('profile',               'updateProfile');
+        Route::put('change-password',       'changePassword');
+        Route::get('sessions',              'sessions');
+        Route::delete('sessions/{id}',      'revokeSession');
+        Route::delete('sessions',           'revokeAllSessions');
     });
 
     Route::prefix('master')->group(function () {

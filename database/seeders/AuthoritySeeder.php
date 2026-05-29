@@ -10,20 +10,20 @@ class AuthoritySeeder extends Seeder
 {
     public function run(): void
     {
-        $allMenuIds = Menu::pluck('id')->toArray();
-
-        $operatorMenuIds = Menu::where('name', 'Dashboard')->pluck('id')->toArray();
-
+        // Administrator — akses semua menu (parent + children)
         $administrator = Authority::create([
             'name'        => 'Administrator',
             'description' => 'Akses penuh ke seluruh fitur sistem',
         ]);
-        $administrator->menus()->attach($allMenuIds);
+        $administrator->menus()->attach(Menu::pluck('id')->toArray());
 
+        // Operator — hanya Dashboard
         $operator = Authority::create([
             'name'        => 'Operator',
             'description' => 'Akses terbatas pada fitur operasional',
         ]);
-        $operator->menus()->attach($operatorMenuIds);
+        $operator->menus()->attach(
+            Menu::where('name', 'Dashboard')->pluck('id')->toArray()
+        );
     }
 }

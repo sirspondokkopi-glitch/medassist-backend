@@ -10,10 +10,11 @@ class TitleMenus extends Model
 {
     use HasAuditColumns;
 
-    protected $fillable = ['title', 'icon', 'sort_order', 'is_active', 'created_by', 'updated_by'];
+    protected $fillable = ['title', 'icon', 'sort_order', 'is_open', 'created_by', 'updated_by'];
 
     public function menus(): HasMany
     {
         return $this->hasMany(Menu::class, 'title_menu_id')->orderBy('sort_order');
     }
 }
+

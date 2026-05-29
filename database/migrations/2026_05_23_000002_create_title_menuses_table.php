@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('icon')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_open')->default(true);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
