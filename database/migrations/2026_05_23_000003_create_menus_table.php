@@ -14,7 +14,9 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('menus')->nullOnDelete();
             $table->string('name');
             $table->string('url')->nullable();
+            $table->string('icon')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_open')->default(false);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamp('deleted_at')->nullable();

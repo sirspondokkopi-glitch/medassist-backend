@@ -10,8 +10,9 @@ class TitleMenuSeeder extends Seeder
     public function run(): void
     {
         $items = [
-            ['title' => 'Dashboard', 'icon' => 'dashboard', 'sort_order' => 1, 'is_open' => true],
-            ['title' => 'Master Data', 'icon' => 'database',  'sort_order' => 2, 'is_open' => true],
+            ['title' => 'Dashboard', 'sort_order' => 1],
+            ['title' => 'Master Data', 'sort_order' => 2],
+            ['title' => 'Cssd', 'sort_order' => 3],
         ];
 
         foreach ($items as $item) {

@@ -11,9 +11,7 @@ return new class extends Migration
         Schema::create('title_menuses', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('icon')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
-            $table->boolean('is_open')->default(true);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamp('deleted_at')->nullable();

@@ -17,9 +17,7 @@
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
 | title | string | Ya | Nama title menu, maks 100 karakter |
-| icon | string | Tidak | Nama icon, maks 100 karakter |
 | sort_order | integer | Tidak | Urutan tampil (default: 0) |
-| is_active | boolean | Tidak | Status aktif (default: true) |
 
 ## Response
 
@@ -31,9 +29,7 @@
   "data": {
     "id": 1,
     "title": "Master Data",
-    "icon": "database",
-    "sort_order": 1,
-    "is_active": true
+    "sort_order": 1
   }
 }
 ```

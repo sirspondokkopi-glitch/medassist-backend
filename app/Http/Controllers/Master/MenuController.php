@@ -11,10 +11,35 @@ class MenuController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $data = Menu::with('parent')
+        $menus = Menu::with('titleMenu')
             ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
             ->orderBy('sort_order')
-            ->paginate(20);
+            ->get();
+
+        $childrenByParent = $menus->whereNotNull('parent_id')->groupBy('parent_id');
+
+        $data = $menus
+            ->whereNull('parent_id')
+            ->groupBy('title_menu_id')
+            ->map(fn ($parents) => [
+                'title_menu' => optional($parents->first()->titleMenu)->title,
+                'menus'      => $parents->map(fn ($parent) => [
+                    'id'            => $parent->id,
+                    'title_menu_id' => $parent->title_menu_id,
+                    'parent_id'     => $parent->parent_id,
+                    'name'          => $parent->name,
+                    'url'           => $parent->url,
+                    'icon'          => $parent->icon,
+                    'sort_order'    => $parent->sort_order,
+                    'is_open'       => (bool) $parent->is_open,
+                    'menu'          => ($childrenByParent->get($parent->id) ?? collect())
+                        ->map(fn ($child) => [
+                            'id'   => $child->id,
+                            'name' => $child->name,
+                            'url'  => $child->url,
+                        ])->values(),
+                ])->values(),
+            ])->values();
 
         return $this->success('Berhasil mengambil data menu.', $data);
     }
@@ -26,7 +51,9 @@ class MenuController extends Controller
             'parent_id'     => 'nullable|integer|exists:menus,id',
             'name'          => 'required|string|max:100',
             'url'           => 'nullable|string|max:255',
+            'icon'          => 'nullable|string|max:100',
             'sort_order'    => 'nullable|integer|min:0',
+            'is_open'       => 'nullable|boolean',
         ]);
 
         try {
@@ -53,7 +80,9 @@ class MenuController extends Controller
             'parent_id'     => 'nullable|integer|exists:menus,id',
             'name'          => 'sometimes|required|string|max:100',
             'url'           => 'nullable|string|max:255',
+            'icon'          => 'nullable|string|max:100',
             'sort_order'    => 'nullable|integer|min:0',
+            'is_open'       => 'nullable|boolean',
         ]);
 
         try {

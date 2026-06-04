@@ -23,9 +23,7 @@ class TitleMenuController extends Controller
     {
         $validated = $request->validate([
             'title'      => 'required|string|max:100',
-            'icon'       => 'nullable|string|max:100',
             'sort_order' => 'nullable|integer|min:0',
-            'is_active'  => 'nullable|boolean',
         ]);
 
         try {
@@ -48,9 +46,7 @@ class TitleMenuController extends Controller
     {
         $validated = $request->validate([
             'title'      => 'sometimes|required|string|max:100',
-            'icon'       => 'nullable|string|max:100',
             'sort_order' => 'nullable|integer|min:0',
-            'is_active'  => 'nullable|boolean',
         ]);
 
         try {

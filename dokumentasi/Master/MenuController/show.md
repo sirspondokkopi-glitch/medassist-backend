@@ -24,16 +24,20 @@
   "status": true,
   "message": "Berhasil mengambil detail menu.",
   "data": {
-    "id": 1,
-    "title_menu_id": 1,
+    "id": 2,
+    "title_menu_id": 2,
     "parent_id": null,
     "name": "Master Data",
     "url": null,
-    "sort_order": 0,
-    "title_menu": { "id": 1, "title": "Master Data" },
+    "icon": "database",
+    "sort_order": 1,
+    "is_open": false,
+    "title_menu": { "id": 2, "title": "Master Data" },
     "parent": null,
     "children": [
-      { "id": 2, "name": "Instrument", "url": "/master/instrument", "sort_order": 1 }
+      { "id": 3, "title_menu_id": 2, "parent_id": 2, "name": "Authority", "url": "/master/otoritas", "icon": "shield", "sort_order": 1, "is_open": false },
+      { "id": 4, "title_menu_id": 2, "parent_id": 2, "name": "Menu", "url": "/master/menu", "icon": "menu", "sort_order": 2, "is_open": false },
+      { "id": 5, "title_menu_id": 2, "parent_id": 2, "name": "User", "url": "/master/user", "icon": "users", "sort_order": 3, "is_open": false }
     ]
   }
 }

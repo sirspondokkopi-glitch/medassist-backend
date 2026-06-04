@@ -145,23 +145,21 @@ class AuthController extends Controller
         $titleMenus = TitleMenus::whereIn('id', $titleMenuIds)->orderBy('sort_order')->get();
 
         return $titleMenus->map(fn ($title) => [
-            'title_name' => $title->title,
-            'icon'       => $title->icon,
-            'is_open'    => (bool) $title->is_open,
+            'title_menu' => $title->title,
             'menus'      => $grouped->get($title->id, collect())
                 ->map(function ($menu) use ($childMenus) {
                     $children = $childMenus->where('parent_id', $menu->id)->values();
-                    $hasChildren = $children->isNotEmpty();
 
                     return [
-                        'parent_name'   => $menu->name,
-                        'redirect_link' => $hasChildren ? null : $menu->url,
-                        'sub_menu'      => $hasChildren
-                            ? $children->map(fn ($child) => [
-                                'name'          => $child->name,
-                                'redirect_link' => $child->url,
-                            ])->values()->toArray()
-                            : null,
+                        'name'       => $menu->name,
+                        'url'        => $menu->url,
+                        'icon'       => $menu->icon,
+                        'sort_order' => $menu->sort_order,
+                        'is_open'    => (bool) $menu->is_open,
+                        'menu'       => $children->map(fn ($child) => [
+                            'name' => $child->name,
+                            'url'  => $child->url,
+                        ])->values()->toArray(),
                     ];
                 })->values()->toArray(),
         ])->values()->toArray();

@@ -22,9 +22,7 @@
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
 | title | string | Tidak | Nama title menu |
-| icon | string | Tidak | Nama icon |
 | sort_order | integer | Tidak | Urutan tampil |
-| is_active | boolean | Tidak | Status aktif |
 
 ## Response
 
@@ -36,9 +34,7 @@
   "data": {
     "id": 1,
     "title": "Master Data",
-    "icon": "database",
     "sort_order": 1,
-    "is_active": true,
     "menus": [
       { "id": 1, "name": "Authority", "url": "/master/otoritas", "sort_order": 1 }
     ]

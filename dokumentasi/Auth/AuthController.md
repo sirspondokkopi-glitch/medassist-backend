@@ -131,30 +131,31 @@
         "token": "1|xxxxxxxxxxxxxxxx",
         "menus": [
             {
-                "title_name": "Dashboard",
-                "icon": "dashboard",
-                "is_open": false,
-                "menus": {
-                    "parent_name": "Dashboard",
-                    "redirect_link": "/dashboard",
-                    "sub_menu": null
-                }
-            },
-            {
-                "title_name": "Master Data",
-                "icon": "database",
-                "is_open": false,
+                "title_menu": "Dashboard",
                 "menus": [
                     {
-                        "parent_name": "Master Data",
-                        "redirect_link": null,
-                        "sub_menu": [
-                            {
-                                "name": "Authority",
-                                "redirect_link": "/master/otoritas"
-                            },
-                            { "name": "Menu", "redirect_link": "/master/menu" },
-                            { "name": "User", "redirect_link": "/master/user" }
+                        "name": "Dashboard",
+                        "url": "/dashboard",
+                        "icon": "dashboard",
+                        "sort_order": 1,
+                        "is_open": false,
+                        "menu": []
+                    }
+                ]
+            },
+            {
+                "title_menu": "Master Data",
+                "menus": [
+                    {
+                        "name": "Master Data",
+                        "url": null,
+                        "icon": "database",
+                        "sort_order": 1,
+                        "is_open": false,
+                        "menu": [
+                            { "name": "Authority", "url": "/master/otoritas" },
+                            { "name": "Menu", "url": "/master/menu" },
+                            { "name": "User", "url": "/master/user" }
                         ]
                     }
                 ]
@@ -175,14 +176,15 @@
         "token": "2|xxxxxxxxxxxxxxxx",
         "menus": [
             {
-                "title_name": "Dashboard",
-                "icon": "dashboard",
-                "is_open": false,
+                "title_menu": "Dashboard",
                 "menus": [
                     {
-                        "parent_name": "Dashboard",
-                        "redirect_link": "/dashboard",
-                        "sub_menu": null
+                        "name": "Dashboard",
+                        "url": "/dashboard",
+                        "icon": "dashboard",
+                        "sort_order": 1,
+                        "is_open": false,
+                        "menu": []
                     }
                 ]
             }
@@ -191,7 +193,12 @@
 }
 ```
 
-> `sub_menu: null` → `parent_name` langsung jadi link via `redirect_link`. `sub_menu` berisi array → `parent_name` jadi header accordion.
+> **Catatan struktur untuk frontend:**
+> - Struktur 3 tingkat: `title_menu` (group/section sidebar) → `menus` (menu induk) → `menu` (sub-menu/anak).
+> - `menus` (induk) punya field: `name`, `url`, `icon`, `sort_order`, `is_open`, `menu`.
+> - `menu` (anak) hanya punya `name` & `url` — **tanpa `icon`** (icon hanya di level `menus`).
+> - `menu: []` (kosong) → menu induk langsung jadi link via `url`. `menu` berisi array → menu induk jadi header accordion.
+> - `is_open` → status default accordion saat halaman dimuat (`true` = terbuka, `false` = tertutup). Default dari server `false`.
 
 #### Error (401)
 
@@ -267,32 +274,31 @@ Ambil data user aktif beserta menu aksesnya. Gunakan saat page refresh untuk reh
         "username": "administrator",
         "menus": [
             {
-                "title_name": "Dashboard",
-                "icon": "dashboard",
-                "is_open": false,
+                "title_menu": "Dashboard",
                 "menus": [
                     {
-                        "parent_name": "Dashboard",
-                        "redirect_link": "/dashboard",
-                        "sub_menu": null
+                        "name": "Dashboard",
+                        "url": "/dashboard",
+                        "icon": "dashboard",
+                        "sort_order": 1,
+                        "is_open": false,
+                        "menu": []
                     }
                 ]
             },
             {
-                "title_name": "Master Data",
-                "icon": "database",
-                "is_open": false,
+                "title_menu": "Master Data",
                 "menus": [
                     {
-                        "parent_name": "Master Data",
-                        "redirect_link": null,
-                        "sub_menu": [
-                            {
-                                "name": "Authority",
-                                "redirect_link": "/master/otoritas"
-                            },
-                            { "name": "Menu", "redirect_link": "/master/menu" },
-                            { "name": "User", "redirect_link": "/master/user" }
+                        "name": "Master Data",
+                        "url": null,
+                        "icon": "database",
+                        "sort_order": 1,
+                        "is_open": false,
+                        "menu": [
+                            { "name": "Authority", "url": "/master/otoritas" },
+                            { "name": "Menu", "url": "/master/menu" },
+                            { "name": "User", "url": "/master/user" }
                         ]
                     }
                 ]

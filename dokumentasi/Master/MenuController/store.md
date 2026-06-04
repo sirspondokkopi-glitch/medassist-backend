@@ -19,7 +19,9 @@
 | parent_id | integer | Tidak | ID menu parent (untuk sub-menu) |
 | name | string | Ya | Nama menu, maks 100 karakter |
 | url | string | Tidak | URL / route menu, maks 255 karakter |
+| icon | string | Tidak | Nama icon, maks 100 karakter |
 | sort_order | integer | Tidak | Urutan tampil (default: 0) |
+| is_open | boolean | Tidak | Status accordion terbuka (default: false) |
 
 ## Response
 
@@ -29,14 +31,16 @@
   "status": true,
   "message": "Menu berhasil dibuat.",
   "data": {
-    "id": 2,
-    "title_menu_id": 1,
-    "parent_id": null,
-    "name": "Instrument",
-    "url": "/master/instrument",
+    "id": 3,
+    "title_menu_id": 2,
+    "parent_id": 2,
+    "name": "Authority",
+    "url": "/master/otoritas",
+    "icon": "shield",
     "sort_order": 1,
-    "title_menu": { "id": 1, "title": "Master Data" },
-    "parent": null
+    "is_open": false,
+    "title_menu": { "id": 2, "title": "Master Data" },
+    "parent": { "id": 2, "name": "Master Data" }
   }
 }
 ```
