@@ -11,7 +11,7 @@
 |-----------|------|----------|------------|
 | instrument_id | integer | Ya | ID instrumen, harus ada di tabel `instruments` |
 | condition_id | integer | Tidak | ID kondisi, harus ada di tabel `conditions` |
-| is_available | boolean | Tidak | Ketersediaan (default: true) |
+| status | string | Tidak | Status unit: `tersedia` (default), `dipinjam`, `sterilisasi`, `dikembalikan` |
 
 > `code` di-generate otomatis oleh backend mengikuti format `{kode_instrumen}-{urutan}`, contoh: `INSK-001`, `INSK-002`. Tidak perlu dikirim dari client.
 
@@ -27,7 +27,7 @@
     "instrument_id": 1,
     "code": "INSK-001",
     "condition_id": 1,
-    "is_available": true,
+    "status": "tersedia",
     "created_by": "Admin",
     "updated_by": "Admin",
     "deleted_at": null,

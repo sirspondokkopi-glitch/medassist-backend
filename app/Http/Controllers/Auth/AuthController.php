@@ -124,9 +124,12 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
+        $user->load('room');
 
         return $this->success('Data user berhasil diambil.', [
             'username' => $user->username,
+            'name'     => $user->name,
+            'room'     => $user->room,
             'menus'    => $this->buildMenuResponse($user),
         ]);
     }

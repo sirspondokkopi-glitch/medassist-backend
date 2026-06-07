@@ -9,7 +9,7 @@
 ### Query Parameters
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
-| search | string | Tidak | Filter berdasarkan `name` (like) |
+| search | string | Tidak | Filter berdasarkan `name` atau `code` (like) |
 | page | integer | Tidak | Nomor halaman (default: 1) |
 
 ## Response
@@ -24,6 +24,7 @@
     "data": [
       {
         "id": 1,
+        "code": "RUCR",
         "name": "Ruang CSSD",
         "created_by": "Admin",
         "updated_by": "Admin",

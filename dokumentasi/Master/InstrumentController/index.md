@@ -12,6 +12,8 @@
 | search | string | Tidak | Filter berdasarkan `name` atau `code` (like) |
 | page | integer | Tidak | Nomor halaman (default: 1) |
 
+> Setiap item menyertakan `stocks_count` — jumlah unit fisik (stok) milik instrumen tersebut.
+
 ## Response
 
 ### Success (200)
@@ -26,6 +28,7 @@
         "id": 1,
         "code": "INS-001",
         "name": "Stetoskop",
+        "stocks_count": 3,
         "created_by": "Admin",
         "updated_by": "Admin",
         "deleted_at": null,

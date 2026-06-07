@@ -10,10 +10,23 @@ class InstrumentStock extends Model
 {
     use HasAuditColumns, HasAutoCode;
 
+    // Status unit instrumen (PRD F6 - monitoring & tracking)
+    public const STATUS_TERSEDIA     = 'tersedia';
+    public const STATUS_DIPINJAM     = 'dipinjam';
+    public const STATUS_STERILISASI  = 'sterilisasi';
+    public const STATUS_DIKEMBALIKAN = 'dikembalikan';
+
+    public const STATUSES = [
+        self::STATUS_TERSEDIA,
+        self::STATUS_DIPINJAM,
+        self::STATUS_STERILISASI,
+        self::STATUS_DIKEMBALIKAN,
+    ];
+
     protected $fillable = [
         'instrument_id',
         'condition_id',
-        'is_available',
+        'status',
         'created_by',
         'updated_by',
     ];

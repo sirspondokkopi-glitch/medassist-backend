@@ -16,7 +16,7 @@
 |-----------|------|----------|------------|
 | instrument_id | integer | Ya | ID instrumen, harus ada di tabel `instruments` |
 | condition_id | integer | Tidak | ID kondisi, harus ada di tabel `conditions` |
-| is_available | boolean | Tidak | Ketersediaan |
+| status | string | Tidak | Status unit: `tersedia`, `dipinjam`, `sterilisasi`, `dikembalikan` |
 
 > `code` tidak dapat diubah setelah dibuat.
 
@@ -32,7 +32,7 @@
     "instrument_id": 1,
     "code": "INSK-001",
     "condition_id": 2,
-    "is_available": false,
+    "status": "dipinjam",
     "created_by": "Admin",
     "updated_by": "Admin",
     "deleted_at": null,

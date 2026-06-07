@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $data = User::with('authority')
+        $data = User::with(['authority', 'room'])
             ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%")
                 ->orWhere('username', 'like', "%{$s}%")
                 ->orWhere('email', 'like', "%{$s}%"))
@@ -27,7 +27,9 @@ class UserController extends Controller
             'name'                  => 'required|string|max:255',
             'username'              => 'required|string|max:100|unique:users,username',
             'email'                 => 'required|email|unique:users,email',
+            'no_telephone'          => 'nullable|string|max:20',
             'authority_id'          => 'required|integer|exists:authorities,id',
+            'room_id'               => 'nullable|integer|exists:rooms,id',
             'password'              => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string',
         ]);
@@ -35,7 +37,7 @@ class UserController extends Controller
         try {
             $validated['password'] = Hash::make($validated['password']);
             $user = User::create($validated);
-            $user->load('authority');
+            $user->load(['authority', 'room']);
 
             return $this->success('User berhasil dibuat.', $user, 201);
         } catch (\Throwable $e) {
@@ -45,7 +47,7 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        $user->load('authority');
+        $user->load(['authority', 'room']);
 
         return $this->success('Berhasil mengambil detail user.', $user);
     }
@@ -58,6 +60,7 @@ class UserController extends Controller
             'email'        => 'sometimes|required|email|unique:users,email,' . $user->id,
             'no_telephone' => 'nullable|string|max:20',
             'authority_id' => 'nullable|integer|exists:authorities,id',
+            'room_id'      => 'nullable|integer|exists:rooms,id',
             'password'     => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -69,7 +72,7 @@ class UserController extends Controller
             }
 
             $user->update($validated);
-            $user->load('authority');
+            $user->load(['authority', 'room']);
 
             return $this->success('User berhasil diperbarui.', $user);
         } catch (\Throwable $e) {

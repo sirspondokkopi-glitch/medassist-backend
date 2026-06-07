@@ -11,6 +11,8 @@
 |-----------|------|----------|------------|
 | name | string | Ya | Nama ruangan, harus unik |
 
+> `code` dibuat otomatis oleh sistem (4 huruf acak unik) — tidak perlu dikirim.
+
 ## Response
 
 ### Success (201)
@@ -20,6 +22,7 @@
   "message": "Ruangan berhasil ditambahkan.",
   "data": {
     "id": 1,
+    "code": "RUCR",
     "name": "Ruang CSSD",
     "created_by": "Admin",
     "updated_by": "Admin",

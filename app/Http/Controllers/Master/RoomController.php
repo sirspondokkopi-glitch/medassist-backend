@@ -11,8 +11,10 @@ class RoomController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $data = Room::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
-            ->paginate(20);
+        $data = Room::when(
+            $request->search,
+            fn($q, $s) => $q->where('name', 'like', "%{$s}%")->orWhere('code', 'like', "%{$s}%")
+        )->paginate(20);
 
         return $this->success('Data ruangan berhasil diambil.', $data);
     }

@@ -36,7 +36,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('menus',            MenuController::class);
         Route::apiResource('users',            UserController::class);
         Route::apiResource('conditions',       ConditionController::class);
+        Route::get('instruments/stats', [InstrumentController::class, 'stats']);
         Route::apiResource('instruments',      InstrumentController::class);
+
+        // QR Code instrumen (F3 PRD): scan untuk lookup & generate label QR
+        Route::post('instrument-stocks/scan',            [InstrumentStockController::class, 'scan']);
+        Route::get('instrument-stocks/{instrument_stock}/qr', [InstrumentStockController::class, 'qr']);
         Route::apiResource('instrument-stocks', InstrumentStockController::class);
         Route::apiResource('rooms',            RoomController::class);
     });

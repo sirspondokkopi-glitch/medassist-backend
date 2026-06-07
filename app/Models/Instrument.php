@@ -11,6 +11,11 @@ class Instrument extends Model
     use HasAuditColumns, HasAutoCode;
 
     protected $fillable = ['name', 'created_by', 'updated_by'];
+
+    public function stocks()
+    {
+        return $this->hasMany(InstrumentStock::class);
+    }
 }
 
 

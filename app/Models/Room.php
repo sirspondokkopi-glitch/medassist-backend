@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Traits\HasAuditColumns;
+use App\Traits\HasAutoCode;
 use Illuminate\Database\Eloquent\Model;
 
 class Room extends Model
 {
-    use HasAuditColumns;
+    use HasAuditColumns, HasAutoCode;
 
     protected $fillable = ['name', 'created_by', 'updated_by'];
 }

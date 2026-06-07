@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'no_telephone',
         'authority_id',
+        'room_id',
         'created_by',
         'updated_by',
     ];
@@ -43,5 +44,10 @@ class User extends Authenticatable
     public function authority(): BelongsTo
     {
         return $this->belongsTo(Authority::class);
+    }
+
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
     }
 }

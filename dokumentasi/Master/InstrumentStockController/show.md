@@ -23,7 +23,7 @@
     "instrument_id": 1,
     "code": "INSK-001",
     "condition_id": 1,
-    "is_available": true,
+    "status": "tersedia",
     "created_by": "Admin",
     "updated_by": "Admin",
     "deleted_at": null,

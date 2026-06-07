@@ -9,6 +9,7 @@
 ### Query Parameters
 | Parameter | Type | Required | Keterangan |
 |-----------|------|----------|------------|
+| instrument_id | integer | Tidak | Filter hanya unit milik instrumen tertentu |
 | search | string | Tidak | Filter berdasarkan `code` atau `name` instrumen (like) |
 | page | integer | Tidak | Nomor halaman (default: 1) |
 
@@ -27,7 +28,7 @@
         "instrument_id": 1,
         "code": "INSK-001",
         "condition_id": 1,
-        "is_available": true,
+        "status": "tersedia",
         "created_by": "Admin",
         "updated_by": "Admin",
         "deleted_at": null,
