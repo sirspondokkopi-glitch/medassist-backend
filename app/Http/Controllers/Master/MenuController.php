@@ -23,20 +23,20 @@ class MenuController extends Controller
             ->groupBy('title_menu_id')
             ->map(fn ($parents) => [
                 'title_menu' => optional($parents->first()->titleMenu)->title,
-                'menus'      => $parents->map(fn ($parent) => [
-                    'id'            => $parent->id,
+                'menus' => $parents->map(fn ($parent) => [
+                    'id' => $parent->id,
                     'title_menu_id' => $parent->title_menu_id,
-                    'parent_id'     => $parent->parent_id,
-                    'name'          => $parent->name,
-                    'url'           => $parent->url,
-                    'icon'          => $parent->icon,
-                    'sort_order'    => $parent->sort_order,
-                    'is_open'       => (bool) $parent->is_open,
-                    'menu'          => ($childrenByParent->get($parent->id) ?? collect())
+                    'parent_id' => $parent->parent_id,
+                    'name' => $parent->name,
+                    'url' => $parent->url,
+                    'icon' => $parent->icon,
+                    'sort_order' => $parent->sort_order,
+                    'is_open' => (bool) $parent->is_open,
+                    'menu' => ($childrenByParent->get($parent->id) ?? collect())
                         ->map(fn ($child) => [
-                            'id'   => $child->id,
+                            'id' => $child->id,
                             'name' => $child->name,
-                            'url'  => $child->url,
+                            'url' => $child->url,
                         ])->values(),
                 ])->values(),
             ])->values();
@@ -48,12 +48,12 @@ class MenuController extends Controller
     {
         $validated = $request->validate([
             'title_menu_id' => 'nullable|integer|exists:title_menuses,id',
-            'parent_id'     => 'nullable|integer|exists:menus,id',
-            'name'          => 'required|string|max:100',
-            'url'           => 'nullable|string|max:255',
-            'icon'          => 'nullable|string|max:100',
-            'sort_order'    => 'nullable|integer|min:0',
-            'is_open'       => 'nullable|boolean',
+            'parent_id' => 'nullable|integer|exists:menus,id',
+            'name' => 'required|string|max:100',
+            'url' => 'nullable|string|max:255',
+            'icon' => 'nullable|string|max:100',
+            'sort_order' => 'nullable|integer|min:0',
+            'is_open' => 'nullable|boolean',
         ]);
 
         try {
@@ -77,12 +77,12 @@ class MenuController extends Controller
     {
         $validated = $request->validate([
             'title_menu_id' => 'nullable|integer|exists:title_menuses,id',
-            'parent_id'     => 'nullable|integer|exists:menus,id',
-            'name'          => 'sometimes|required|string|max:100',
-            'url'           => 'nullable|string|max:255',
-            'icon'          => 'nullable|string|max:100',
-            'sort_order'    => 'nullable|integer|min:0',
-            'is_open'       => 'nullable|boolean',
+            'parent_id' => 'nullable|integer|exists:menus,id',
+            'name' => 'sometimes|required|string|max:100',
+            'url' => 'nullable|string|max:255',
+            'icon' => 'nullable|string|max:100',
+            'sort_order' => 'nullable|integer|min:0',
+            'is_open' => 'nullable|boolean',
         ]);
 
         try {

@@ -12,14 +12,14 @@ class AuthoritySeeder extends Seeder
     {
         // Administrator — akses semua menu (parent + children)
         $administrator = Authority::create([
-            'name'        => 'Administrator',
+            'name' => 'Administrator',
             'description' => 'Akses penuh ke seluruh fitur sistem',
         ]);
         $administrator->menus()->attach(Menu::pluck('id')->toArray());
 
         // Operator — hanya Dashboard
         $operator = Authority::create([
-            'name'        => 'Operator',
+            'name' => 'Operator',
             'description' => 'Akses terbatas pada fitur operasional',
         ]);
         $operator->menus()->attach(

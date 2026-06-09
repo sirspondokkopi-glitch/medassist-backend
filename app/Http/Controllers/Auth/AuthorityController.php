@@ -20,16 +20,16 @@ class AuthorityController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:100|unique:authorities,name',
+            'name' => 'required|string|max:100|unique:authorities,name',
             'description' => 'nullable|string|max:255',
-            'menu_ids'    => 'nullable|array',
-            'menu_ids.*'  => 'integer|exists:menus,id',
+            'menu_ids' => 'nullable|array',
+            'menu_ids.*' => 'integer|exists:menus,id',
         ]);
 
         try {
             $authority = Authority::create($validated);
 
-            if (!empty($validated['menu_ids'])) {
+            if (! empty($validated['menu_ids'])) {
                 $authority->menus()->sync($validated['menu_ids']);
             }
 
@@ -51,10 +51,10 @@ class AuthorityController extends Controller
     public function update(Request $request, Authority $authority): JsonResponse
     {
         $validated = $request->validate([
-            'name'        => 'sometimes|required|string|max:100|unique:authorities,name,' . $authority->id,
+            'name' => 'sometimes|required|string|max:100|unique:authorities,name,'.$authority->id,
             'description' => 'nullable|string|max:255',
-            'menu_ids'    => 'nullable|array',
-            'menu_ids.*'  => 'integer|exists:menus,id',
+            'menu_ids' => 'nullable|array',
+            'menu_ids.*' => 'integer|exists:menus,id',
         ]);
 
         try {

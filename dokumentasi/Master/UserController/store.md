@@ -20,7 +20,6 @@
 | email | string | Ya | Email unik |
 | no_telephone | string | Tidak | Nomor telepon (opsional) |
 | authority_id | integer | Ya | ID otoritas user (harus ada di tabel authorities) |
-| room_id | integer | Tidak | ID ruangan/unit user (peminjam), harus ada di tabel rooms |
 | password | string | Ya | Minimal 8 karakter |
 | password_confirmation | string | Ya | Harus sama dengan `password` |
 
@@ -37,16 +36,10 @@
     "username": "johndoe",
     "email": "john@example.com",
     "authority_id": 1,
-    "room_id": 3,
     "authority": {
       "id": 1,
       "name": "Administrator",
       "description": "Akses penuh ke seluruh fitur sistem"
-    },
-    "room": {
-      "id": 3,
-      "code": "QPRT",
-      "name": "Poli Umum"
     },
     "created_at": "2026-05-26T08:00:00.000000Z",
     "updated_at": "2026-05-26T08:00:00.000000Z"

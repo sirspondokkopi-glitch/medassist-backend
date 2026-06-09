@@ -14,11 +14,11 @@ class InstrumentStockController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = InstrumentStock::with(['instrument', 'condition'])
-            ->when($request->instrument_id, fn($q, $id) => $q->where('instrument_id', $id))
+            ->when($request->instrument_id, fn ($q, $id) => $q->where('instrument_id', $id))
             ->when(
                 $request->search,
-                fn($q, $s) => $q->where('code', 'like', "%{$s}%")
-                    ->orWhereHas('instrument', fn($q) => $q->where('name', 'like', "%{$s}%"))
+                fn ($q, $s) => $q->where('code', 'like', "%{$s}%")
+                    ->orWhereHas('instrument', fn ($q) => $q->where('name', 'like', "%{$s}%"))
             )
             ->paginate(20);
 
@@ -29,13 +29,14 @@ class InstrumentStockController extends Controller
     {
         $validated = $request->validate([
             'instrument_id' => 'required|integer|exists:instruments,id',
-            'condition_id'  => 'nullable|integer|exists:conditions,id',
-            'status'        => ['nullable', Rule::in(InstrumentStock::STATUSES)],
+            'condition_id' => 'nullable|integer|exists:conditions,id',
+            'status' => ['nullable', Rule::in(InstrumentStock::STATUSES)],
         ]);
 
         try {
             $stock = InstrumentStock::create($validated);
             $stock->load(['instrument', 'condition']);
+
             return $this->success('Stok instrumen berhasil ditambahkan.', $stock, 201);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -45,6 +46,7 @@ class InstrumentStockController extends Controller
     public function show(InstrumentStock $instrumentStock): JsonResponse
     {
         $instrumentStock->load(['instrument', 'condition']);
+
         return $this->success('Detail stok instrumen berhasil diambil.', $instrumentStock);
     }
 
@@ -52,13 +54,14 @@ class InstrumentStockController extends Controller
     {
         $validated = $request->validate([
             'instrument_id' => 'required|integer|exists:instruments,id',
-            'condition_id'  => 'nullable|integer|exists:conditions,id',
-            'status'        => ['nullable', Rule::in(InstrumentStock::STATUSES)],
+            'condition_id' => 'nullable|integer|exists:conditions,id',
+            'status' => ['nullable', Rule::in(InstrumentStock::STATUSES)],
         ]);
 
         try {
             $instrumentStock->update($validated);
             $instrumentStock->load(['instrument', 'condition']);
+
             return $this->success('Stok instrumen berhasil diperbarui.', $instrumentStock);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -69,6 +72,7 @@ class InstrumentStockController extends Controller
     {
         try {
             $instrumentStock->delete();
+
             return $this->success('Stok instrumen berhasil dihapus.');
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -85,8 +89,8 @@ class InstrumentStockController extends Controller
             $svg = QrCode::format('svg')->size(300)->margin(1)->generate($instrumentStock->code);
 
             return $this->success('QR Code instrumen berhasil dibuat.', [
-                'code'   => $instrumentStock->code,
-                'qr_svg' => 'data:image/svg+xml;base64,' . base64_encode($svg),
+                'code' => $instrumentStock->code,
+                'qr_svg' => 'data:image/svg+xml;base64,'.base64_encode($svg),
             ]);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -107,10 +111,20 @@ class InstrumentStockController extends Controller
             ->where('code', $validated['code'])
             ->first();
 
-        if (!$stock) {
+        if (! $stock) {
             return $this->error('Instrumen dengan kode tersebut tidak ditemukan.', 404);
         }
 
         return $this->success('Instrumen ditemukan.', $stock);
+    }
+
+    /**
+     * Riwayat pergerakan/perubahan status sebuah unit instrumen (terbaru dulu).
+     */
+    public function logs(InstrumentStock $instrumentStock): JsonResponse
+    {
+        $logs = $instrumentStock->logs()->latest('id')->paginate(20);
+
+        return $this->success('Riwayat pergerakan unit berhasil diambil.', $logs);
     }
 }

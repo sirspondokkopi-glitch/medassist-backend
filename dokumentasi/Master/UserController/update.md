@@ -25,7 +25,6 @@
 | email | string | Tidak | Email unik |
 | no_telephone | string | Tidak | Nomor telepon, maks 20 karakter |
 | authority_id | integer | Tidak | ID otoritas user |
-| room_id | integer | Tidak | ID ruangan/unit user (peminjam), harus ada di tabel rooms |
 | password | string | Tidak | Password baru (minimal 8 karakter). Abaikan jika tidak ingin ganti |
 | password_confirmation | string | Tidak | Wajib jika `password` diisi |
 

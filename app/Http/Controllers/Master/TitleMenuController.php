@@ -22,7 +22,7 @@ class TitleMenuController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'title'      => 'required|string|max:100',
+            'title' => 'required|string|max:100',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
@@ -45,7 +45,7 @@ class TitleMenuController extends Controller
     public function update(Request $request, TitleMenus $titleMenu): JsonResponse
     {
         $validated = $request->validate([
-            'title'      => 'sometimes|required|string|max:100',
+            'title' => 'sometimes|required|string|max:100',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 

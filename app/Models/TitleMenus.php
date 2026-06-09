@@ -17,4 +17,3 @@ class TitleMenus extends Model
         return $this->hasMany(Menu::class, 'title_menu_id')->orderBy('sort_order');
     }
 }
-

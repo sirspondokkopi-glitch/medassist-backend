@@ -21,7 +21,7 @@ abstract class Controller
     {
         $response = ['status' => false, 'message' => $message];
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             $response['errors'] = $errors;
         }
 

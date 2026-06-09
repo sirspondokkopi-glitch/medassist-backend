@@ -34,7 +34,7 @@ trait HasAuditColumns
     /**
      * Soft delete: set deleted_at + deleted_by, never hard-deletes.
      */
-    public function delete(): bool|null
+    public function delete(): ?bool
     {
         $this->deleted_at = now();
         $this->deleted_by = auth()->user()?->name ?? 'system';
@@ -45,7 +45,7 @@ trait HasAuditColumns
     /**
      * Permanently remove the record from the database.
      */
-    public function forceDelete(): bool|null
+    public function forceDelete(): ?bool
     {
         return parent::delete();
     }

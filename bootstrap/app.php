@@ -19,14 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $isApi = fn($request) => $request->is('api/*') || $request->expectsJson();
+        $isApi = fn ($request) => $request->is('api/*') || $request->expectsJson();
 
         $exceptions->render(function (ValidationException $e, $request) use ($isApi) {
             if ($isApi($request)) {
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => 'Data yang dikirim tidak valid.',
-                    'errors'  => $e->errors(),
+                    'errors' => $e->errors(),
                 ], 422);
             }
         });
@@ -34,7 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ModelNotFoundException $e, $request) use ($isApi) {
             if ($isApi($request)) {
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => 'Data tidak ditemukan.',
                 ], 404);
             }
@@ -43,7 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (NotFoundHttpException $e, $request) use ($isApi) {
             if ($isApi($request)) {
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => 'Endpoint tidak ditemukan.',
                 ], 404);
             }
@@ -52,20 +52,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, $request) use ($isApi) {
             if ($isApi($request)) {
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => 'Unauthenticated. Silakan login terlebih dahulu.',
                 ], 401);
             }
         });
 
-        $exceptions->render(function (\Throwable $e, $request) use ($isApi) {
+        $exceptions->render(function (Throwable $e, $request) use ($isApi) {
             if ($isApi($request)) {
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => $e->getMessage(),
-                    'code'    => $e->getCode(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
+                    'code' => $e->getCode(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
                 ], 500);
             }
         });

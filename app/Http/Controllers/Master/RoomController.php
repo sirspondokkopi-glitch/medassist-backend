@@ -13,7 +13,7 @@ class RoomController extends Controller
     {
         $data = Room::when(
             $request->search,
-            fn($q, $s) => $q->where('name', 'like', "%{$s}%")->orWhere('code', 'like', "%{$s}%")
+            fn ($q, $s) => $q->where('name', 'like', "%{$s}%")->orWhere('code', 'like', "%{$s}%")
         )->paginate(20);
 
         return $this->success('Data ruangan berhasil diambil.', $data);
@@ -27,6 +27,7 @@ class RoomController extends Controller
 
         try {
             $room = Room::create($validated);
+
             return $this->success('Ruangan berhasil ditambahkan.', $room, 201);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -41,11 +42,12 @@ class RoomController extends Controller
     public function update(Request $request, Room $room): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:rooms,name,' . $room->id,
+            'name' => 'required|string|max:255|unique:rooms,name,'.$room->id,
         ]);
 
         try {
             $room->update($validated);
+
             return $this->success('Ruangan berhasil diperbarui.', $room);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -56,6 +58,7 @@ class RoomController extends Controller
     {
         try {
             $room->delete();
+
             return $this->success('Ruangan berhasil dihapus.');
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);

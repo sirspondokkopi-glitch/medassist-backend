@@ -14,24 +14,24 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name'                  => 'required|string|max:255',
-            'username'              => 'required|string|max:255|unique:users,username',
-            'email'                 => 'required|email|max:255|unique:users,email',
-            'password'              => 'required|string|min:8|confirmed',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         try {
             $user = User::create([
-                'name'     => $validated['name'],
+                'name' => $validated['name'],
                 'username' => $validated['username'],
-                'email'    => $validated['email'],
+                'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
             ]);
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return $this->success('Registrasi berhasil.', [
-                'user'  => $user,
+                'user' => $user,
                 'token' => $token,
             ], 201);
         } catch (\Throwable $e) {
@@ -42,14 +42,14 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'username'    => 'required|string',
-            'password'    => 'required|string',
+            'username' => 'required|string',
+            'password' => 'required|string',
             'device_name' => 'nullable|string|max:100',
         ]);
 
         $user = User::where('username', $validated['username'])->first();
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
             return $this->error('Email/username atau password salah.', 401);
         }
 
@@ -58,12 +58,12 @@ class AuthController extends Controller
         }
 
         $tokenName = $validated['device_name'] ?? 'auth_token';
-        $token     = $user->createToken($tokenName)->plainTextToken;
+        $token = $user->createToken($tokenName)->plainTextToken;
 
         return $this->success('Login berhasil.', [
             'username' => $user->username,
-            'token'    => $token,
-            'menus'    => $this->buildMenuResponse($user),
+            'token' => $token,
+            'menus' => $this->buildMenuResponse($user),
         ]);
     }
 
@@ -75,11 +75,11 @@ class AuthController extends Controller
             ->orderByDesc('last_used_at')
             ->get()
             ->map(fn ($token) => [
-                'id'          => $token->id,
+                'id' => $token->id,
                 'device_name' => $token->name,
-                'last_used'   => $token->last_used_at?->toDateTimeString(),
-                'created_at'  => $token->created_at->toDateTimeString(),
-                'is_current'  => $token->id === $currentId,
+                'last_used' => $token->last_used_at?->toDateTimeString(),
+                'created_at' => $token->created_at->toDateTimeString(),
+                'is_current' => $token->id === $currentId,
             ]);
 
         return $this->success('Berhasil mengambil daftar sesi aktif.', $sessions);
@@ -89,12 +89,13 @@ class AuthController extends Controller
     {
         $token = $request->user()->tokens()->find($id);
 
-        if (!$token) {
+        if (! $token) {
             return $this->error('Sesi tidak ditemukan.', 404);
         }
 
         try {
             $token->delete();
+
             return $this->success('Sesi berhasil dihapus.');
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -105,6 +106,7 @@ class AuthController extends Controller
     {
         try {
             $request->user()->tokens()->delete();
+
             return $this->success('Semua sesi berhasil dihapus.');
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -115,6 +117,7 @@ class AuthController extends Controller
     {
         try {
             $request->user()->currentAccessToken()->delete();
+
             return $this->success('Logout berhasil.');
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -124,13 +127,11 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load('room');
 
         return $this->success('Data user berhasil diambil.', [
             'username' => $user->username,
-            'name'     => $user->name,
-            'room'     => $user->room,
-            'menus'    => $this->buildMenuResponse($user),
+            'name' => $user->name,
+            'menus' => $this->buildMenuResponse($user),
         ]);
     }
 
@@ -138,30 +139,30 @@ class AuthController extends Controller
     {
         $user->load(['authority.menus' => fn ($q) => $q->orderBy('sort_order')]);
 
-        $allMenus    = $user->authority?->menus ?? collect();
+        $allMenus = $user->authority?->menus ?? collect();
         $parentMenus = $allMenus->whereNull('parent_id');
-        $childMenus  = $allMenus->whereNotNull('parent_id');
+        $childMenus = $allMenus->whereNotNull('parent_id');
 
-        $grouped      = $parentMenus->groupBy('title_menu_id');
+        $grouped = $parentMenus->groupBy('title_menu_id');
         $titleMenuIds = $grouped->keys()->filter()->values()->all();
 
         $titleMenus = TitleMenus::whereIn('id', $titleMenuIds)->orderBy('sort_order')->get();
 
         return $titleMenus->map(fn ($title) => [
             'title_menu' => $title->title,
-            'menus'      => $grouped->get($title->id, collect())
+            'menus' => $grouped->get($title->id, collect())
                 ->map(function ($menu) use ($childMenus) {
                     $children = $childMenus->where('parent_id', $menu->id)->values();
 
                     return [
-                        'name'       => $menu->name,
-                        'url'        => $menu->url,
-                        'icon'       => $menu->icon,
+                        'name' => $menu->name,
+                        'url' => $menu->url,
+                        'icon' => $menu->icon,
                         'sort_order' => $menu->sort_order,
-                        'is_open'    => (bool) $menu->is_open,
-                        'menu'       => $children->map(fn ($child) => [
+                        'is_open' => (bool) $menu->is_open,
+                        'menu' => $children->map(fn ($child) => [
                             'name' => $child->name,
-                            'url'  => $child->url,
+                            'url' => $child->url,
                         ])->values()->toArray(),
                     ];
                 })->values()->toArray(),
@@ -173,19 +174,19 @@ class AuthController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'name'                  => 'required|string|max:255',
-            'username'              => 'required|string|max:255|unique:users,username,' . $user->id,
-            'email'                 => 'required|email|max:255|unique:users,email,' . $user->id,
-            'password'              => 'nullable|string|min:8|confirmed',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,'.$user->id,
+            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'nullable|string|min:8|confirmed',
             'password_confirmation' => 'required_with:password|string',
         ]);
 
         try {
             $user->update([
-                'name'     => $validated['name'],
+                'name' => $validated['name'],
                 'username' => $validated['username'],
-                'email'    => $validated['email'],
-                ...(!empty($validated['password']) ? ['password' => Hash::make($validated['password'])] : []),
+                'email' => $validated['email'],
+                ...(! empty($validated['password']) ? ['password' => Hash::make($validated['password'])] : []),
             ]);
 
             $user->refresh();
@@ -201,13 +202,14 @@ class AuthController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
-            'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,'.$user->id,
+            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
         ]);
 
         try {
             $user->update($validated);
+
             return $this->success('Profil berhasil diperbarui.', $user);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -218,12 +220,12 @@ class AuthController extends Controller
     {
         $request->validate([
             'current_password' => 'required|string',
-            'password'         => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = $request->user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return $this->error('Password saat ini tidak sesuai.', 422);
         }
 

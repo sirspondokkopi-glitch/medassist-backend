@@ -11,7 +11,7 @@ class ConditionController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $data = Condition::when($request->search, fn($q, $s) => $q->where('name', 'like', "%{$s}%"))
+        $data = Condition::when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
             ->paginate(20);
 
         return $this->success('Data kondisi berhasil diambil.', $data);
@@ -25,6 +25,7 @@ class ConditionController extends Controller
 
         try {
             $condition = Condition::create($validated);
+
             return $this->success('Kondisi berhasil ditambahkan.', $condition, 201);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -39,11 +40,12 @@ class ConditionController extends Controller
     public function update(Request $request, Condition $condition): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:conditions,name,' . $condition->id,
+            'name' => 'required|string|max:255|unique:conditions,name,'.$condition->id,
         ]);
 
         try {
             $condition->update($validated);
+
             return $this->success('Kondisi berhasil diperbarui.', $condition);
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);
@@ -54,6 +56,7 @@ class ConditionController extends Controller
     {
         try {
             $condition->delete();
+
             return $this->success('Kondisi berhasil dihapus.');
         } catch (\Throwable $e) {
             return $this->error($e->getMessage(), 500);

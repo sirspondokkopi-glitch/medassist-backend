@@ -34,14 +34,22 @@ MedAssist is a **Laravel 12** backend (PHP 8.2+) for managing medical instrument
 
 ### Domain Model
 
-The core domain tracks physical instrument units assigned to hospital rooms with condition tracking:
+The core domain tracks physical instrument units, their sterilization cycles, loans, and condition over time:
 
 - **`Instrument`** — a type/catalog of medical instrument (`code` unique, `name`)
-- **`InstrumentStock`** — an individual physical unit of an instrument (`code` unique, belongs to `Instrument` via `instrument_id`, linked to `Condition` via `condition_id`, `is_available` boolean)
+- **`InstrumentStock`** — an individual physical unit of an instrument (`code` auto `{KODE}-NNN`, belongs to `Instrument` via `instrument_id`, linked to `Condition` via `condition_id`, `status` string). Status enum: `tersedia` (default) / `dipinjam` / `sterilisasi` / `dikembalikan`.
+- **`InstrumentStockLog`** — append-only history of every status change of a unit (no soft delete). Auto-recorded via model `created`/`updated` events. Context: `create` / `manual` / `order` / `sterilization`.
 - **`Condition`** — lookup table for instrument condition states (e.g. good, damaged)
-- **`Room`** — hospital room where instruments are deployed
+- **`Room`** — hospital room where instruments are deployed (`code` 4-letter unique)
+- **`InstrumentSet` / `InstrumentSetItem`** — a set/tray grouping many physical units managed as one package (`code` auto `SET-NNN`)
+- **`Order` / `OrderItem`** — instrument loan (header + borrowed units). `code` auto `ORD-NNN`. Status: `diajukan`/`disetujui`/`dipinjam`/`dikembalikan`/`dibatalkan`. Table name is `order` (reserved keyword → `protected $table = 'order'`).
+- **`Sterilization` / `SterilizationItem`** — sterilization batch/cycle + units in it. `code` auto `STR-NNN`. Status: `diproses`/`selesai`/`gagal`. Tracks method, temperature, indicators, and **sterile expiry date**.
 
-`Instrument` → `InstrumentStock` is a one-to-many: one instrument type has many physical stock items.
+Relations: `Instrument` → `InstrumentStock` (1:N); `InstrumentStock` → `InstrumentStockLog` (1:N); `Order`/`Sterilization`/`InstrumentSet` each → their `*Item` (1:N) → `InstrumentStock` (N:1).
+
+**Unit status sync:** changing an Order/Sterilization status updates the related units' `status`. Always use `InstrumentStock::transitionMany($ids, $status, $meta)` (not `whereIn()->update()`) so logging & audit columns fire. Context/reference are passed via the transient `InstrumentStock::$logMeta` property.
+
+Full domain & endpoint reference (v1.2): see `dokumentasi/PRD.md`.
 
 ### Audit Columns & Soft Delete Pattern
 

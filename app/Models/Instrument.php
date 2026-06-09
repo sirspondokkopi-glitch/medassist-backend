@@ -17,5 +17,3 @@ class Instrument extends Model
         return $this->hasMany(InstrumentStock::class);
     }
 }
-
-
